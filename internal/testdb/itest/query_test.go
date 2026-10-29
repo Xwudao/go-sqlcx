@@ -563,6 +563,36 @@ func TestPaginationAndErrors(t *testing.T) {
 		if len(mixed) != 4 {
 			t.Fatalf("mixed keyset: %v", names(mixed))
 		}
+		// Page + AllAndCount: the total ignores LIMIT/OFFSET.
+		pageRows, total, err := u.Query().Where(u.Name.Ne("Bob")).OrderBy(u.ID.Asc()).Page(2, 2).AllAndCount(ctx, d)
+		if err != nil || total != 3 || !reflect.DeepEqual(names(pageRows), []string{"Dan_O'Neil"}) {
+			t.Fatalf("AllAndCount: %v %d %v", names(pageRows), total, err)
+		}
+		ptrRows, total, err := u.Query().OrderBy(u.ID.Asc()).Page(0, 1).AllPtrsAndCount(ctx, d)
+		if err != nil || total != 4 || len(ptrRows) != 1 || ptrRows[0].Name != "Ann" {
+			t.Fatalf("AllPtrsAndCount: %v %d %v", ptrRows, total, err)
+		}
+		none, total, err := u.Query().Where(u.ID.Eq(-1)).Page(1, 10).AllAndCount(ctx, d)
+		if err != nil || total != 0 || none != nil {
+			t.Fatalf("AllAndCount empty: %v %d %v", none, total, err)
+		}
+		if _, _, err := u.Query().Page(1, -1).Build(); err == nil {
+			t.Fatal("negative page size accepted")
+		}
+		// Optional order terms.
+		dir := "desc"
+		byAge := must[[]db.User](t)(u.Query().Where(u.Age.IsNotNull()).OrderBy(
+			u.Age.Asc().If(dir == "asc"), u.Age.Desc().If(dir == "desc"), u.ID.Asc(),
+		).All(ctx, d))
+		if !reflect.DeepEqual(names(byAge), []string{"Cat", "Ann", "Bob"}) {
+			t.Fatalf("Order.If: %v", names(byAge))
+		}
+		// Runtime direction on a column keeps the column identity for the
+		// stability check.
+		sorted := must[[]db.User](t)(u.Query().OrderBy(u.CreatedAt.Sort(true), u.ID.Sort(false)).RequireStableOrder().All(ctx, d))
+		if !reflect.DeepEqual(names(sorted), []string{"Dan_O'Neil", "Cat", "Bob", "Ann"}) {
+			t.Fatalf("Sort: %v", names(sorted))
+		}
 		offset := must[[]db.User](t)(u.Query().OrderBy(u.ID.Asc()).Limit(2).Offset(2).All(ctx, d))
 		if !reflect.DeepEqual(names(offset), []string{"Cat", "Dan_O'Neil"}) {
 			t.Fatalf("offset: %v", names(offset))
@@ -604,7 +634,7 @@ func TestPaginationAndErrors(t *testing.T) {
 			t.Fatal("count")
 		}
 		// pgx errors propagate unchanged.
-		_, err := u.Insert().Set(u.Email, "ann@example.com").Set(u.Name, "dup").Exec(ctx, d)
+		_, err = u.Insert().Set(u.Email, "ann@example.com").Set(u.Name, "dup").Exec(ctx, d)
 		var pgErr interface{ SQLState() string }
 		if !errors.As(err, &pgErr) || pgErr.SQLState() != "23505" {
 			t.Fatalf("expected unique violation, got %v", err)

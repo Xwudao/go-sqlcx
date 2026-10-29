@@ -74,9 +74,13 @@ func goldenCases() map[string]builder {
 		"distinct_on_lock": u.Query().DistinctOn(u.Status).OrderBy(u.Status.Asc(), u.Age.Desc().NullsLast()).ForUpdate(sqlcx.SkipLocked()),
 		"keyset_uniform":   u.Query().SeekAfter(u.CreatedAt.Desc().After(since), u.ID.Desc().After(10)).Limit(20),
 		"sort_by_runtime":  u.Query().OrderBy(sqlcx.SortBy(u.CreatedAt, true), sqlcx.SortBy(u.Name, false)).RequireStableOrder().OrderBy(u.ID.Asc()),
-		"keyset_mixed":     u.Query().SeekAfter(u.Name.Asc().After("n"), u.ID.Desc().After(10)),
-		"count":            countSQL{u.Query().Where(u.Age.Gt(1)).OrderBy(u.ID.Asc()).Limit(5)},
-		"cte_recursive":    sqlcx.SelectFields(nb(tid, sqlcx.Ref[sqlcx.Number[int32]](tree, "depth"))...).From(tree).With(tree),
+		"order_if_page": u.Query().OrderBy(
+			u.CreatedAt.Asc().If(false), u.CreatedAt.Desc().If(true), u.Name.Asc().NullsLast().If(true),
+			u.Age.Sort(true), u.Name.Lower().Sort(false), u.ID.Asc(),
+		).Page(3, 20),
+		"keyset_mixed":  u.Query().SeekAfter(u.Name.Asc().After("n"), u.ID.Desc().After(10)),
+		"count":         countSQL{u.Query().Where(u.Age.Gt(1)).OrderBy(u.ID.Asc()).Limit(5)},
+		"cte_recursive": sqlcx.SelectFields(nb(tid, sqlcx.Ref[sqlcx.Number[int32]](tree, "depth"))...).From(tree).With(tree),
 		"update": u.Update().Set(u.Name, "Tim").SetNull(u.Nickname).Increment(u.Age, 1).
 			SetExpr(u.Meta, u.Meta.SetPath([]string{"a", "b"}, true)).Where(u.ID.Eq(1)),
 		"update_from_returning": o.Update().SetExpr(o.Note, sqlcx.AsText(u.Name.Upper())).From(u).Where(u.ID.EqExpr(o.UserID)).Returning(),

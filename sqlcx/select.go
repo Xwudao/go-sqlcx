@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"iter"
+	"math"
 	"slices"
 	"strings"
 
@@ -209,6 +210,19 @@ func (q Select[R]) Offset(n int64) Select[R] {
 	q = q.clone()
 	q.st.Offset = param(n)
 	return q
+}
+
+// Page sets LIMIT size OFFSET (page-1)*size for 1-based page numbers;
+// pages below 1 are treated as page 1.
+func (q Select[R]) Page(page, size int64) Select[R] {
+	if size < 0 {
+		return q.fail(fmt.Errorf("sqlcx: negative page size %d", size))
+	}
+	page = max(page, 1)
+	if size > 0 && page-1 > math.MaxInt64/size {
+		return q.fail(fmt.Errorf("sqlcx: page %d of size %d overflows OFFSET", page, size))
+	}
+	return q.Limit(size).Offset((page - 1) * size)
 }
 
 // LockOption modifies a row-locking clause.
@@ -479,6 +493,29 @@ func (q Select[R]) All(ctx context.Context, db DB) ([]R, error) {
 func (q Select[R]) AllPtrs(ctx context.Context, db DB) ([]*R, error) {
 	rows, err := q.All(ctx, db)
 	return pointers(rows), err
+}
+
+// AllAndCount returns the rows of the current page together with the total
+// number of matching rows (Count, which ignores ORDER BY, LIMIT and OFFSET),
+// the usual shape of a paginated list. The two statements run separately on
+// db; pass a pgx.Tx with REPEATABLE READ isolation when they must see the
+// same snapshot. When the total is zero the page query is skipped.
+func (q Select[R]) AllAndCount(ctx context.Context, db DB) ([]R, int64, error) {
+	total, err := q.Count(ctx, db)
+	if err != nil || total == 0 {
+		return nil, total, err
+	}
+	rows, err := q.All(ctx, db)
+	if err != nil {
+		return nil, 0, err
+	}
+	return rows, total, nil
+}
+
+// AllPtrsAndCount is AllAndCount returning pointers (see AllPtrs).
+func (q Select[R]) AllPtrsAndCount(ctx context.Context, db DB) ([]*R, int64, error) {
+	rows, total, err := q.AllAndCount(ctx, db)
+	return pointers(rows), total, err
 }
 
 // One executes the query and returns its only row. It returns pgx.ErrNoRows

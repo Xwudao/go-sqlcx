@@ -203,7 +203,26 @@ next := u.Query().SeekAfter(                            // keyset 分页
 total, err := q.Count(ctx, pool)                        // 忽略 ORDER BY/LIMIT/OFFSET
 ```
 
-运行时决定方向用 `sqlcx.SortBy(col, desc)`，例如 `sqlcx.SortBy(u.CreatedAt, req.Order == "desc")`。唯一键由 link 从 schema DDL 提取。`NullsFirst/NullsLast`、表达式排序、`Limit/Offset`、`Exists`、`First`（要求 ORDER BY）、`One`（多行报 `ErrTooManyRows`）、`Rows`（`iter.Seq2` 流式迭代）均可用。
+运行时决定排序的三种写法（与条件上的 `.If` 一致，`nil` 排序项会被跳过）：
+
+```go
+q.OrderBy(
+    u.CreatedAt.Asc().If(req.CreateOrder == "asc"),   // 可选排序项
+    u.CreatedAt.Desc().If(req.CreateOrder == "desc"),
+    u.Age.Sort(req.AgeOrder == "desc"),               // 方向由 bool 决定（true = DESC）
+    sqlcx.SortBy(field, desc),                        // 对任意 Sortable 同样适用
+    u.ID.Asc(),
+)
+```
+
+列表页的常见形态（总数忽略 LIMIT/OFFSET，总数为 0 时不再查询分页数据）：
+
+```go
+rows, total, err := q.OrderBy(u.ID.Desc()).Page(req.Page, req.Size).AllAndCount(ctx, pool)
+// AllPtrsAndCount 返回 []*M，配合 emit_result_struct_pointers
+```
+
+两条语句分别执行；需要同一快照时传入 REPEATABLE READ 的 `pgx.Tx`。唯一键由 link 从 schema DDL 提取。`NullsFirst/NullsLast`、表达式排序、`Limit/Offset`、`Exists`、`First`（要求 ORDER BY）、`One`（多行报 `ErrTooManyRows`）、`Rows`（`iter.Seq2` 流式迭代）均可用。
 
 ## UPDATE / INSERT / DELETE
 

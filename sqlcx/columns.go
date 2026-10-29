@@ -79,6 +79,12 @@ func (c ValueColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
 }
 
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c ValueColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
+}
+
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
 // inside ON CONFLICT DO UPDATE.
 func (c ValueColumn[M, T, V, N]) Excluded() Value[V] {
@@ -119,6 +125,12 @@ func (c Column[M, T, V, N]) Asc() Order[V] {
 // Desc orders by the column descending.
 func (c Column[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
+}
+
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c Column[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
 }
 
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
@@ -163,6 +175,12 @@ func (c OrderedColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
 }
 
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c OrderedColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
+}
+
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
 // inside ON CONFLICT DO UPDATE.
 func (c OrderedColumn[M, T, V, N]) Excluded() Ordered[V] {
@@ -203,6 +221,12 @@ func (c TextColumn[M, T, V, N]) Asc() Order[V] {
 // Desc orders by the column descending.
 func (c TextColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
+}
+
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c TextColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
 }
 
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
@@ -247,6 +271,12 @@ func (c NumberColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
 }
 
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c NumberColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
+}
+
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
 // inside ON CONFLICT DO UPDATE.
 func (c NumberColumn[M, T, V, N]) Excluded() Number[V] {
@@ -287,6 +317,12 @@ func (c BoolColumn[M, T, V, N]) Asc() Order[V] {
 // Desc orders by the column descending.
 func (c BoolColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
+}
+
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c BoolColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
 }
 
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
@@ -331,6 +367,12 @@ func (c JSONColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
 }
 
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c JSONColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
+}
+
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
 // inside ON CONFLICT DO UPDATE.
 func (c JSONColumn[M, T, V, N]) Excluded() JSON[V] {
@@ -373,6 +415,12 @@ func (c JSONBColumn[M, T, V, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
 }
 
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c JSONBColumn[M, T, V, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
+}
+
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)
 // inside ON CONFLICT DO UPDATE.
 func (c JSONBColumn[M, T, V, N]) Excluded() JSONB[V] {
@@ -413,6 +461,12 @@ func (c ArrayColumn[M, T, V, E, N]) Asc() Order[V] {
 // Desc orders by the column descending.
 func (c ArrayColumn[M, T, V, E, N]) Desc() Order[V] {
 	return Order[V]{item: ast.OrderItem{X: c.n, Desc: true}, key: c.info.key()}
+}
+
+// Sort orders by the column, descending when desc is true; use it when the
+// direction is decided at run time.
+func (c ArrayColumn[M, T, V, E, N]) Sort(desc bool) Order[V] {
+	return Order[V]{item: ast.OrderItem{X: c.n, Desc: desc}, key: c.info.key()}
 }
 
 // Excluded refers to the value proposed for insertion (EXCLUDED.column)

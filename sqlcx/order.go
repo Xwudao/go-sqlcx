@@ -42,6 +42,21 @@ func (o Order[V]) NullsLast() Order[V] {
 	return o
 }
 
+// If returns the term when ok is true and nil otherwise; OrderBy skips nil
+// terms, so optional sort keys stay inline:
+//
+//	q.OrderBy(
+//	    u.CreatedAt.Asc().If(req.Order == "asc"),
+//	    u.CreatedAt.Desc().If(req.Order == "desc"),
+//	    u.ID.Asc(),
+//	)
+func (o Order[V]) If(ok bool) OrderTerm {
+	if !ok {
+		return nil
+	}
+	return o
+}
+
 // After returns a keyset-pagination key: rows strictly after v in this
 // order. See Select.SeekAfter.
 func (o Order[V]) After(v V) SeekKey { return SeekKey{order: o, val: param(v)} }

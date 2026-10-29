@@ -79,6 +79,9 @@ func (e Value[V]) Asc() Order[V] { return Order[V]{item: ast.OrderItem{X: e.n}} 
 // Desc orders by e descending.
 func (e Value[V]) Desc() Order[V] { return Order[V]{item: ast.OrderItem{X: e.n, Desc: true}} }
 
+// Sort orders by e, descending when desc is true.
+func (e Value[V]) Sort(desc bool) Order[V] { return Order[V]{item: ast.OrderItem{X: e.n, Desc: desc}} }
+
 // Cast converts e with CAST(e AS pgType) and retypes it as U. pgType must be
 // a PostgreSQL type name written by the developer; it is validated.
 func (e Value[V]) Cast[U any](pgType string) Value[U] { return Cast[U](e, pgType) }

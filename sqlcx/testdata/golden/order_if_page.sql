@@ -1,0 +1,2 @@
+SELECT "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" ORDER BY "users"."created_at" DESC, "users"."name" ASC NULLS LAST, "users"."age" DESC, lower("users"."name") ASC, "users"."id" ASC LIMIT $1 OFFSET $2
+-- args: []interface {}{20, 40}
