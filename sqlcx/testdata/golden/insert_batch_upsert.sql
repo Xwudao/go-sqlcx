@@ -1,0 +1,2 @@
+INSERT INTO "users" ("email", "name") VALUES ($1, $2), ($3, $4) ON CONFLICT ("email") DO UPDATE SET "name" = EXCLUDED."name" WHERE "users"."status" <> $5 RETURNING "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at"
+-- args: []interface {}{"a", "A", "b", "B", "banned"}

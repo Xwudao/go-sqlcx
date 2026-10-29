@@ -1,0 +1,598 @@
+{
+  "version": 1,
+  "sqlc_version": "v1.31.1",
+  "engine": "postgresql",
+  "default_schema": "public",
+  "schemas": [
+    {
+      "name": "public",
+      "tables": [
+        {
+          "schema": "public",
+          "name": "authors",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "bigserial"
+              },
+              "not_null": true,
+              "table": {
+                "name": "authors"
+              }
+            },
+            {
+              "name": "email",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "authors"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "authors"
+              }
+            },
+            {
+              "name": "bio",
+              "type": {
+                "name": "text"
+              },
+              "not_null": false,
+              "table": {
+                "name": "authors"
+              }
+            },
+            {
+              "name": "created_at",
+              "type": {
+                "name": "timestamptz"
+              },
+              "not_null": true,
+              "table": {
+                "name": "authors"
+              }
+            }
+          ]
+        },
+        {
+          "schema": "public",
+          "name": "posts",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "bigserial"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "author_id",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int8"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "title",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "status",
+              "type": {
+                "name": "post_status"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "tags",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "is_array": true,
+              "array_dims": 1,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "attrs",
+              "type": {
+                "name": "jsonb"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "views",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int4"
+              },
+              "not_null": true,
+              "table": {
+                "name": "posts"
+              }
+            },
+            {
+              "name": "published_at",
+              "type": {
+                "name": "timestamptz"
+              },
+              "not_null": false,
+              "table": {
+                "name": "posts"
+              }
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "name": "post_status",
+          "values": [
+            "draft",
+            "published",
+            "archived"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pg_temp",
+      "tables": null
+    }
+  ],
+  "queries": [
+    {
+      "name": "CreateAuthor",
+      "cmd": ":one",
+      "text": "INSERT INTO authors (email, name, bio) VALUES ($1, $2, $3) RETURNING id, email, name, bio, created_at",
+      "filename": "query.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "email",
+          "original_name": "email",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "bio",
+          "original_name": "bio",
+          "type": {
+            "name": "text"
+          },
+          "not_null": false,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "email",
+            "original_name": "email",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "original_name": "name",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "bio",
+            "original_name": "bio",
+            "type": {
+              "name": "text"
+            },
+            "not_null": false,
+            "table": {
+              "schema": "public",
+              "name": "authors"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CreatePost",
+      "cmd": ":one",
+      "text": "INSERT INTO posts (author_id, title, status, tags) VALUES ($1, $2, $3, $4) RETURNING id, author_id, title, status, tags, attrs, views, published_at",
+      "filename": "query.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "author_id",
+          "original_name": "author_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "title",
+          "original_name": "title",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "status",
+          "original_name": "status",
+          "type": {
+            "name": "post_status"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "tags",
+          "original_name": "tags",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "is_array": true,
+          "array_dims": 1,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "attrs",
+          "original_name": "attrs",
+          "type": {
+            "name": "jsonb"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "views",
+          "original_name": "views",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "published_at",
+          "original_name": "published_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": false,
+          "table": {
+            "name": "posts"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "author_id",
+            "original_name": "author_id",
+            "type": {
+              "name": "pg_catalog.int8"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "posts"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "title",
+            "original_name": "title",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "posts"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "status",
+            "original_name": "status",
+            "type": {
+              "name": "post_status"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "posts"
+            }
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "tags",
+            "original_name": "tags",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "is_array": true,
+            "array_dims": 1,
+            "table": {
+              "schema": "public",
+              "name": "posts"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GetAuthor",
+      "cmd": ":one",
+      "text": "SELECT id, email, name, bio, created_at FROM authors WHERE id = $1",
+      "filename": "query.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "email",
+          "original_name": "email",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "bio",
+          "original_name": "bio",
+          "type": {
+            "name": "text"
+          },
+          "not_null": false,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id",
+            "original_name": "id",
+            "type": {
+              "name": "bigserial"
+            },
+            "not_null": true,
+            "table": {
+              "name": "authors"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ListPublished",
+      "cmd": ":many",
+      "text": "SELECT p.id, p.title, a.name AS author, p.views, p.published_at\nFROM posts p\nJOIN authors a ON a.id = p.author_id\nWHERE p.status = 'published'\nORDER BY published_at DESC",
+      "filename": "query.sql",
+      "comments": [
+        "sqlcx:dynamic"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "title",
+          "original_name": "title",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "author",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "authors"
+          }
+        },
+        {
+          "name": "views",
+          "original_name": "views",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": true,
+          "table": {
+            "name": "posts"
+          }
+        },
+        {
+          "name": "published_at",
+          "original_name": "published_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": false,
+          "table": {
+            "name": "posts"
+          }
+        }
+      ]
+    }
+  ],
+  "options": {
+    "package": "dynamic"
+  }
+}

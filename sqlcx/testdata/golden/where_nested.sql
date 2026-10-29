@@ -1,0 +1,2 @@
+SELECT "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" WHERE ("users"."name" ILIKE $1 OR "users"."age" BETWEEN $2 AND $3 AND NOT $4 = ANY ("users"."tags")) AND FALSE AND TRUE AND "users"."id" = ANY ($5)
+-- args: []interface {}{"%a%", 1, 9, "x", []int64{1, 2}}

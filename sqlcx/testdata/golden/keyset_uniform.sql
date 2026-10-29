@@ -1,0 +1,2 @@
+SELECT "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" WHERE ROW("users"."created_at", "users"."id") < ROW($1, $2) ORDER BY "users"."created_at" DESC, "users"."id" DESC LIMIT $3
+-- args: []interface {}{time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC), 10, 20}

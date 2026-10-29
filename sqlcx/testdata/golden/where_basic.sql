@@ -1,0 +1,2 @@
+SELECT "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" WHERE "users"."status" = $1 AND "users"."age" >= $2 ORDER BY "users"."created_at" DESC LIMIT $3
+-- args: []interface {}{"active", 18, 20}

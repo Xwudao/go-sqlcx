@@ -1,0 +1,1449 @@
+{
+  "version": 1,
+  "sqlc_version": "v1.31.1",
+  "engine": "postgresql",
+  "default_schema": "public",
+  "schemas": [
+    {
+      "name": "public",
+      "tables": [
+        {
+          "schema": "public",
+          "name": "users",
+          "comment": "Application users.",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "bigserial"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "email",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "nickname",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "varchar"
+              },
+              "not_null": false,
+              "comment": "Optional display name.",
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "age",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int4"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "status",
+              "type": {
+                "name": "user_status"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "prev_status",
+              "type": {
+                "name": "user_status"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "balance",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "numeric"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "score",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "float8"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "is_admin",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "bool"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "tags",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "is_array": true,
+              "array_dims": 1,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "meta",
+              "type": {
+                "name": "jsonb"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "settings",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "json"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "external_id",
+              "type": {
+                "name": "uuid"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "manager_id",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int8"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "birthday",
+              "type": {
+                "name": "date"
+              },
+              "not_null": false,
+              "table": {
+                "name": "users"
+              }
+            },
+            {
+              "name": "created_at",
+              "type": {
+                "name": "timestamptz"
+              },
+              "not_null": true,
+              "table": {
+                "name": "users"
+              }
+            }
+          ]
+        },
+        {
+          "schema": "public",
+          "name": "orders",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "bigserial"
+              },
+              "not_null": true,
+              "table": {
+                "name": "orders"
+              }
+            },
+            {
+              "name": "user_id",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int8"
+              },
+              "not_null": true,
+              "table": {
+                "name": "orders"
+              }
+            },
+            {
+              "name": "amount",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "numeric"
+              },
+              "not_null": true,
+              "table": {
+                "name": "orders"
+              }
+            },
+            {
+              "name": "quantity",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int4"
+              },
+              "not_null": true,
+              "table": {
+                "name": "orders"
+              }
+            },
+            {
+              "name": "note",
+              "type": {
+                "name": "text"
+              },
+              "not_null": false,
+              "table": {
+                "name": "orders"
+              }
+            },
+            {
+              "name": "created_at",
+              "type": {
+                "name": "timestamptz"
+              },
+              "not_null": true,
+              "table": {
+                "name": "orders"
+              }
+            }
+          ]
+        },
+        {
+          "schema": "public",
+          "name": "categories",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "serial"
+              },
+              "not_null": true,
+              "table": {
+                "name": "categories"
+              }
+            },
+            {
+              "name": "parent_id",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int4"
+              },
+              "not_null": false,
+              "table": {
+                "name": "categories"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "categories"
+              }
+            },
+            {
+              "name": "slug",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "name": "categories"
+              }
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "name": "user_status",
+          "values": [
+            "active",
+            "inactive",
+            "banned"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pg_temp",
+      "tables": null
+    },
+    {
+      "name": "audit",
+      "tables": [
+        {
+          "schema": "audit",
+          "name": "users",
+          "columns": [
+            {
+              "name": "id",
+              "type": {
+                "name": "bigserial"
+              },
+              "not_null": true,
+              "table": {
+                "schema": "audit",
+                "name": "users"
+              }
+            },
+            {
+              "name": "user_id",
+              "type": {
+                "schema": "pg_catalog",
+                "name": "int8"
+              },
+              "not_null": true,
+              "table": {
+                "schema": "audit",
+                "name": "users"
+              }
+            },
+            {
+              "name": "action",
+              "type": {
+                "name": "text"
+              },
+              "not_null": true,
+              "table": {
+                "schema": "audit",
+                "name": "users"
+              }
+            },
+            {
+              "name": "at",
+              "type": {
+                "name": "timestamptz"
+              },
+              "not_null": true,
+              "table": {
+                "schema": "audit",
+                "name": "users"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "name": "CreateOrder",
+      "cmd": ":one",
+      "text": "INSERT INTO orders (user_id, amount, quantity, note) VALUES ($1, $2, $3, $4) RETURNING id, user_id, amount, quantity, note, created_at",
+      "filename": "orders.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "user_id",
+          "original_name": "user_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "amount",
+          "original_name": "amount",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "quantity",
+          "original_name": "quantity",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "note",
+          "original_name": "note",
+          "type": {
+            "name": "text"
+          },
+          "not_null": false,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "user_id",
+            "original_name": "user_id",
+            "type": {
+              "name": "pg_catalog.int8"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "orders"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "amount",
+            "original_name": "amount",
+            "type": {
+              "name": "pg_catalog.numeric"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "orders"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "quantity",
+            "original_name": "quantity",
+            "type": {
+              "name": "pg_catalog.int4"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "orders"
+            }
+          }
+        },
+        {
+          "number": 4,
+          "column": {
+            "name": "note",
+            "original_name": "note",
+            "type": {
+              "name": "text"
+            },
+            "not_null": false,
+            "table": {
+              "schema": "public",
+              "name": "orders"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ListRecentOrders",
+      "cmd": ":many",
+      "text": "SELECT id, user_id, amount, quantity, note, created_at FROM orders ORDER BY created_at DESC LIMIT $1",
+      "filename": "orders.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "user_id",
+          "original_name": "user_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "amount",
+          "original_name": "amount",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "quantity",
+          "original_name": "quantity",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "note",
+          "original_name": "note",
+          "type": {
+            "name": "text"
+          },
+          "not_null": false,
+          "table": {
+            "name": "orders"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "orders"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "limit",
+            "type": {
+              "name": "integer"
+            },
+            "not_null": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "AddAuditEntry",
+      "cmd": ":exec",
+      "text": "INSERT INTO audit.users (user_id, action) VALUES ($1, $2)",
+      "filename": "orders.sql",
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "user_id",
+            "original_name": "user_id",
+            "type": {
+              "name": "pg_catalog.int8"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "audit",
+              "name": "users"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "action",
+            "original_name": "action",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "audit",
+              "name": "users"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GetUser",
+      "cmd": ":one",
+      "text": "SELECT id, email, name, nickname, age, status, prev_status, balance, score, is_admin, tags, meta, settings, external_id, manager_id, birthday, created_at FROM users WHERE id = $1",
+      "filename": "users.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "email",
+          "original_name": "email",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "nickname",
+          "original_name": "nickname",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varchar"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "age",
+          "original_name": "age",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "status",
+          "original_name": "status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "prev_status",
+          "original_name": "prev_status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "balance",
+          "original_name": "balance",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "score",
+          "original_name": "score",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "is_admin",
+          "original_name": "is_admin",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "tags",
+          "original_name": "tags",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "is_array": true,
+          "array_dims": 1,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "meta",
+          "original_name": "meta",
+          "type": {
+            "name": "jsonb"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "settings",
+          "original_name": "settings",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "json"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "external_id",
+          "original_name": "external_id",
+          "type": {
+            "name": "uuid"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "manager_id",
+          "original_name": "manager_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "birthday",
+          "original_name": "birthday",
+          "type": {
+            "name": "date"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "id",
+            "original_name": "id",
+            "type": {
+              "name": "bigserial"
+            },
+            "not_null": true,
+            "table": {
+              "name": "users"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CreateUser",
+      "cmd": ":one",
+      "text": "INSERT INTO users (email, name, status) VALUES ($1, $2, $3) RETURNING id, email, name, nickname, age, status, prev_status, balance, score, is_admin, tags, meta, settings, external_id, manager_id, birthday, created_at",
+      "filename": "users.sql",
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "email",
+          "original_name": "email",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "nickname",
+          "original_name": "nickname",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varchar"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "age",
+          "original_name": "age",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "status",
+          "original_name": "status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "prev_status",
+          "original_name": "prev_status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "balance",
+          "original_name": "balance",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "score",
+          "original_name": "score",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "is_admin",
+          "original_name": "is_admin",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "tags",
+          "original_name": "tags",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "is_array": true,
+          "array_dims": 1,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "meta",
+          "original_name": "meta",
+          "type": {
+            "name": "jsonb"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "settings",
+          "original_name": "settings",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "json"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "external_id",
+          "original_name": "external_id",
+          "type": {
+            "name": "uuid"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "manager_id",
+          "original_name": "manager_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "birthday",
+          "original_name": "birthday",
+          "type": {
+            "name": "date"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "email",
+            "original_name": "email",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "users"
+            }
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "name",
+            "original_name": "name",
+            "type": {
+              "name": "text"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "users"
+            }
+          }
+        },
+        {
+          "number": 3,
+          "column": {
+            "name": "status",
+            "original_name": "status",
+            "type": {
+              "name": "user_status"
+            },
+            "not_null": true,
+            "table": {
+              "schema": "public",
+              "name": "users"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ListUsersByStatus",
+      "cmd": ":many",
+      "text": "SELECT id, email, name, nickname, age, status, prev_status, balance, score, is_admin, tags, meta, settings, external_id, manager_id, birthday, created_at FROM users\nWHERE status = $1\nORDER BY created_at DESC, id DESC",
+      "filename": "users.sql",
+      "comments": [
+        "sqlcx:dynamic"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "email",
+          "original_name": "email",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "nickname",
+          "original_name": "nickname",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "varchar"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "age",
+          "original_name": "age",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int4"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "status",
+          "original_name": "status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "prev_status",
+          "original_name": "prev_status",
+          "type": {
+            "name": "user_status"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "balance",
+          "original_name": "balance",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "score",
+          "original_name": "score",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "float8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "is_admin",
+          "original_name": "is_admin",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "bool"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "tags",
+          "original_name": "tags",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "is_array": true,
+          "array_dims": 1,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "meta",
+          "original_name": "meta",
+          "type": {
+            "name": "jsonb"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "settings",
+          "original_name": "settings",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "json"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "external_id",
+          "original_name": "external_id",
+          "type": {
+            "name": "uuid"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "manager_id",
+          "original_name": "manager_id",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "int8"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "birthday",
+          "original_name": "birthday",
+          "type": {
+            "name": "date"
+          },
+          "not_null": false,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "created_at",
+          "original_name": "created_at",
+          "type": {
+            "name": "timestamptz"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "status",
+            "original_name": "status",
+            "type": {
+              "name": "user_status"
+            },
+            "not_null": true,
+            "table": {
+              "name": "users"
+            },
+            "is_named_param": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "ListUserOrderTotals",
+      "cmd": ":many",
+      "text": "SELECT u.id AS user_id, u.name, count(o.id) AS order_count, coalesce(sum(o.amount), 0)::numeric AS total\nFROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= $1 AND u.status = $2\nGROUP BY u.id, u.name\nORDER BY total DESC",
+      "filename": "users.sql",
+      "comments": [
+        "sqlcx:dynamic"
+      ],
+      "columns": [
+        {
+          "name": "user_id",
+          "original_name": "id",
+          "type": {
+            "name": "bigserial"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "name",
+          "original_name": "name",
+          "type": {
+            "name": "text"
+          },
+          "not_null": true,
+          "table": {
+            "name": "users"
+          }
+        },
+        {
+          "name": "order_count",
+          "type": {
+            "name": "bigint"
+          },
+          "not_null": true,
+          "is_func_call": true
+        },
+        {
+          "name": "total",
+          "type": {
+            "schema": "pg_catalog",
+            "name": "numeric"
+          },
+          "not_null": true
+        }
+      ],
+      "params": [
+        {
+          "number": 1,
+          "column": {
+            "name": "since",
+            "original_name": "created_at",
+            "type": {
+              "name": "timestamptz"
+            },
+            "not_null": true,
+            "table": {
+              "name": "users"
+            },
+            "is_named_param": true
+          }
+        },
+        {
+          "number": 2,
+          "column": {
+            "name": "status",
+            "original_name": "status",
+            "type": {
+              "name": "user_status"
+            },
+            "not_null": true,
+            "table": {
+              "name": "users"
+            },
+            "is_named_param": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "CountUsers",
+      "cmd": ":one",
+      "text": "SELECT count(*) FROM users",
+      "filename": "users.sql",
+      "columns": [
+        {
+          "name": "count",
+          "type": {
+            "name": "bigint"
+          },
+          "not_null": true,
+          "is_func_call": true
+        }
+      ]
+    }
+  ],
+  "options": {
+    "package": "dynamic"
+  }
+}

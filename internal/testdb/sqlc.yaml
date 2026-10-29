@@ -1,0 +1,29 @@
+version: "2"
+plugins:
+  - name: sqlcx
+    process:
+      cmd: sqlc-dynamic
+sql:
+  - engine: postgresql
+    schema: schema
+    queries: queries
+    gen:
+      go:
+        package: db
+        out: db
+        sql_package: pgx/v5
+        emit_json_tags: true
+        rename:
+          is_admin: Administrator
+        overrides:
+          - column: users.nickname
+            go_type:
+              type: string
+              pointer: true
+          - column: audit.users.at
+            go_type: time.Time
+    codegen:
+      - plugin: sqlcx
+        out: dynamic
+        options:
+          package: dynamic

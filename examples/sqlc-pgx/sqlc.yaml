@@ -1,0 +1,20 @@
+version: "2"
+plugins:
+  - name: sqlcx
+    process:
+      cmd: sqlc-dynamic
+sql:
+  - engine: postgresql
+    schema: schema.sql
+    queries: query.sql
+    gen:
+      go:
+        package: db
+        out: db
+        sql_package: pgx/v5
+        emit_db_tags: true
+    codegen:
+      - plugin: sqlcx
+        out: dynamic
+        options:
+          package: dynamic

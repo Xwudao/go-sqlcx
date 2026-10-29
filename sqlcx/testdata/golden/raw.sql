@@ -1,0 +1,2 @@
+SELECT "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" WHERE (to_tsvector("users"."name")) @@ to_tsquery($1) AND meta ? 'k' AND name <> '?'
+-- args: []interface {}{"go"}

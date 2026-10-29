@@ -1,0 +1,2 @@
+SELECT DISTINCT ON ("users"."status") "users"."id", "users"."email", "users"."name", "users"."nickname", "users"."age", "users"."status", "users"."prev_status", "users"."balance", "users"."score", "users"."is_admin", "users"."tags", "users"."meta", "users"."settings", "users"."external_id", "users"."manager_id", "users"."birthday", "users"."created_at" FROM "users" ORDER BY "users"."status" ASC, "users"."age" DESC NULLS LAST FOR UPDATE SKIP LOCKED
+-- args: []interface {}(nil)
