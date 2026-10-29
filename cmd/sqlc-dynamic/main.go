@@ -50,13 +50,14 @@ func main() {
 func usage(w io.Writer) {
 	fmt.Fprint(w, `usage:
   sqlc-dynamic link     [-f sqlc.yaml] [-plugin name] [-check]
-  sqlc-dynamic generate [-f sqlc.yaml] [-plugin name] [-sqlc path]
+  sqlc-dynamic generate [-f sqlc.yaml] [-plugin name] [-sqlc path] [-check]
   sqlc-dynamic version
 
 link      reads the manifest written by the plugin and the Go code generated
           by sqlc, and writes the dynamic query descriptors.
 generate  runs "sqlc generate" and then link.
--check    verifies that the generated files are up to date without writing.
+-check    verifies that the generated files are up to date without writing;
+          with generate it runs "sqlc diff" instead of "sqlc generate".
 `)
 }
 
@@ -71,7 +72,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 	file := fs.String("f", "", "path to the sqlc configuration file")
 	pluginName := fs.String("plugin", "", "name of the sqlc-dynamic plugin entry (default: detect by process cmd)")
 	check := fs.Bool("check", false, "fail if generated files are out of date instead of writing them")
-	sqlcBin := fs.String("sqlc", "", "sqlc command (generate only); default: \"go tool sqlc\" if the module declares it, else sqlc from PATH")
+	sqlcBin := fs.String("sqlc", "", "sqlc command (generate only); default: \"go tool sqlc\" if the module of the working directory or of the configuration declares it, else sqlc from PATH")
 	switch cmd {
 	case "version":
 		fmt.Fprintln(stdout, "sqlc-dynamic", cg.Version)
@@ -98,7 +99,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 		}
 	}
 	if cmd == "generate" {
-		if err := runSqlc(*sqlcBin, path, stdout, stderr); err != nil {
+		if err := runSqlc(*sqlcBin, path, *check, stdout, stderr); err != nil {
 			return err
 		}
 	}
@@ -147,28 +148,22 @@ func link(path, pluginName string, check bool, stdout io.Writer) error {
 	return nil
 }
 
-// runSqlc runs `sqlc generate`. The running sqlc-dynamic executable is put
-// first on the child's PATH under the name sqlc sees in sqlc.yaml, so the
-// plugin resolves even when sqlc-dynamic was started with `go tool` and is
-// not installed.
-func runSqlc(sqlcCmd, configPath string, stdout, stderr io.Writer) error {
+// runSqlc runs `sqlc generate`, or `sqlc diff` when check is set. The running
+// sqlc-dynamic executable is put first on the child's PATH under the name sqlc
+// sees in sqlc.yaml, so the plugin resolves even when sqlc-dynamic was started
+// with `go tool` and is not installed.
+func runSqlc(sqlcCmd, configPath string, check bool, stdout, stderr io.Writer) error {
 	configPath, err := filepath.Abs(configPath)
 	if err != nil {
 		return err
 	}
-	argv := strings.Fields(sqlcCmd)
-	if len(argv) == 0 {
-		// Prefer the version pinned by a `tool` directive of the project's
-		// go.mod; otherwise use sqlc from PATH.
-		probe := exec.Command("go", "tool", "-n", "sqlc")
-		probe.Dir = filepath.Dir(configPath)
-		if probe.Run() == nil {
-			argv = []string{"go", "tool", "sqlc"}
-		} else if p, err := exec.LookPath("sqlc"); err == nil {
-			argv = []string{p}
-		} else {
-			return errors.New("sqlc not found: install it, add it as a go.mod tool, or pass -sqlc")
-		}
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	argv, dir, err := resolveSqlc(sqlcCmd, []string{wd, filepath.Dir(configPath)}, goToolDeclares, exec.LookPath)
+	if err != nil {
+		return err
 	}
 	self, err := os.Executable()
 	if err != nil {
@@ -182,14 +177,49 @@ func runSqlc(sqlcCmd, configPath string, stdout, stderr io.Writer) error {
 	if err := os.Symlink(self, filepath.Join(binDir, config.PluginCommand)); err != nil {
 		return err
 	}
-	c := exec.Command(argv[0], append(argv[1:], "generate", "-f", configPath)...)
-	c.Dir = filepath.Dir(configPath)
+	action := "generate"
+	if check {
+		action = "diff"
+	}
+	c := exec.Command(argv[0], append(argv[1:], action, "-f", configPath)...)
+	c.Dir = dir
 	c.Env = append(os.Environ(), "PATH="+binDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	c.Stdout, c.Stderr = stdout, stderr
 	if err := c.Run(); err != nil {
-		return fmt.Errorf("%s generate: %w", strings.Join(argv, " "), err)
+		return fmt.Errorf("%s %s: %w", strings.Join(argv, " "), action, err)
 	}
 	return nil
+}
+
+// resolveSqlc picks the sqlc command and the directory to run it in. An
+// explicit command runs in the configuration directory (the last of dirs).
+// Otherwise the version pinned by a `tool` directive wins, looked up in dirs
+// in order: the working directory comes first so that a nested tools module
+// (cd tools && go tool sqlc-dynamic generate -f ../sqlc.yaml) uses its own
+// pin, and `go tool` has to run inside that module. sqlc from PATH is the
+// fallback.
+func resolveSqlc(sqlcCmd string, dirs []string, declares func(dir string) bool, lookPath func(string) (string, error)) ([]string, string, error) {
+	configDir := dirs[len(dirs)-1]
+	if argv := strings.Fields(sqlcCmd); len(argv) > 0 {
+		return argv, configDir, nil
+	}
+	for _, d := range dirs {
+		if declares(d) {
+			return []string{"go", "tool", "sqlc"}, d, nil
+		}
+	}
+	if p, err := lookPath("sqlc"); err == nil {
+		return []string{p}, configDir, nil
+	}
+	return nil, "", errors.New("sqlc not found: install it, add it as a go.mod tool, or pass -sqlc")
+}
+
+// goToolDeclares reports whether the module containing dir declares sqlc as
+// a tool.
+func goToolDeclares(dir string) bool {
+	probe := exec.Command("go", "tool", "-n", "sqlc")
+	probe.Dir = dir
+	return probe.Run() == nil
 }
 
 // writeFile replaces path atomically.

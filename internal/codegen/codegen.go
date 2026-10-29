@@ -16,7 +16,7 @@ import (
 )
 
 // Version is the generator version written into generated files.
-const Version = "v0.1.0"
+const Version = "v0.1.1"
 
 // File is the generation model of one output package.
 type File struct {

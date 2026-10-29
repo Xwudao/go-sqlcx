@@ -94,9 +94,10 @@ sqlc-dynamic generate        # = sqlc generate && sqlc-dynamic link
 sqlc generate                # sqlc 生成 Model，插件写出 dynamic/sqlcx.manifest.json
 sqlc-dynamic link            # 读取清单 + 用 go/types 读取 sqlc 实际生成的代码，写出 dynamic/sqlcx_gen.go
 sqlc-dynamic link -check     # CI：生成结果过期时失败
+sqlc-dynamic generate -check # CI：sqlc diff + link -check，不写任何文件
 ```
 
-项目用 go.mod `tool` 指令管理工具时（`go get -tool github.com/Xwudao/go-sqlcx/cmd/sqlc-dynamic`），直接 `go tool sqlc-dynamic generate` 即可：它优先使用项目固定版本的 `go tool sqlc`，并把自身临时放到 sqlc 子进程的 PATH 上，无需安装任何二进制。注意此后单独运行 `sqlc generate` 时插件必须在 PATH 中，建议把项目的 sqlc 生成命令统一换成 `sqlc-dynamic generate`。
+项目用 go.mod `tool` 指令管理工具时（`go get -tool github.com/Xwudao/go-sqlcx/cmd/sqlc-dynamic`），直接 `go tool sqlc-dynamic generate` 即可：它优先使用项目固定版本的 `go tool sqlc`（先查当前目录所在的 module，再查 sqlc.yaml 所在的 module，因此工具放在嵌套 module 时可以 `cd tools && go tool sqlc-dynamic generate -f ../sqlc.yaml`），并把自身临时放到 sqlc 子进程的 PATH 上，无需安装任何二进制。注意此后单独运行 `sqlc generate` 时插件必须在 PATH 中，建议把项目的 sqlc 生成命令统一换成 `sqlc-dynamic generate`。
 
 为什么是两步：sqlc 并发执行所有 codegen 目标、最后才写文件，插件运行时看不到新生成的 Go 代码；link 在 sqlc 写完之后运行，读取的是实际生成的 Model，因此 overrides、rename、nullable、自定义类型都以 sqlc 的结果为准。输出是确定的（固定顺序、gofmt）。
 
