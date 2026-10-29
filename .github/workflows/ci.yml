@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: sqlcx
+          POSTGRES_PASSWORD: sqlcx
+          POSTGRES_DB: sqlcx
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U sqlcx -d sqlcx"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      SQLC_VERSION: 1.31.1
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            bench/go.sum
+      - name: Install sqlc
+        run: |
+          mkdir -p "$RUNNER_TEMP/sqlc"
+          curl -fsSL "https://github.com/sqlc-dev/sqlc/releases/download/v${SQLC_VERSION}/sqlc_${SQLC_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$RUNNER_TEMP/sqlc" sqlc
+          echo "$RUNNER_TEMP/sqlc" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/sqlc/sqlc" version
+      - name: Lint
+        run: make lint
+      - name: Generated code is up to date
+        run: make check
+      - name: Test
+        run: make race
+      - name: Build the WASM plugin
+        run: make wasm

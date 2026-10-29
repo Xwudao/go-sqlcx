@@ -348,3 +348,9 @@ go run ./examples/sqlc-pgx
 ```
 
 集成测试默认连接 `postgres://sqlcx:sqlcx@localhost:54329/sqlcx`，可用 `SQLCX_DATABASE_URL` 覆盖；每次运行创建并删除独立数据库。无数据库时集成测试跳过，设 `SQLCX_REQUIRE_DB=1` 则失败。
+
+CI（`.github/workflows/ci.yml`）在 PostgreSQL 18 服务容器上依次运行 `make lint`、`make check`、`make race` 和 `make wasm`，并安装 sqlc 以执行 `sqlc diff` 一致性测试。
+
+## License
+
+[MIT](LICENSE)

@@ -4,6 +4,9 @@ go 1.27
 
 toolchain go1.27.3
 
+// The module zips of these versions contain a stray 34 MB sqlc-dynamic binary.
+retract [v0.1.0, v0.1.1]
+
 require (
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/jinzhu/inflection v1.0.0

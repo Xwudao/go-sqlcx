@@ -1,2 +1,3 @@
 /bin/
+/sqlc-dynamic
 internal/testdb/tmp-*
