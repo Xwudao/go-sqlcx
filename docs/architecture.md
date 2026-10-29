@@ -33,7 +33,7 @@ go-sqlcx 是 sqlc 的伴生扩展：在不修改 sqlc、不 fork sqlc、不改�
 
 ### 2.3 Go 1.27 泛型方法（scratch 程序实测）
 
-- **支持**：具体类型（含泛型类型）上的方法可以声明自己的类型参数，例如 `func (q Select[R]) Into[R2 any](...) Select[R2]`、`func (u Update[M]) Set[V any](c Assignable[M, V], v V) Update[M]`。
+- **支持**：具体类型（含泛型类型）上的方法可以声明自己的类型参数，例如 `func (q Select[R]) Into[R2 any](...) Select[R2]`、`func (u Update[M]) Set[V any](c Assignable[M, V], v V) Update[M]`、`func (q Select[R]) Page[P, S Integer](page P, size S) Select[R]`（分页、窗口、下标等整数参数都用 `Integer` 约束接受任意整数类型，内部按 int64/int32 绑定并检查越界）。
 - **不支持**：接口方法不能带类型参数（编译错误 `interface method must have no type parameters`），因此泛型方法不能用于接口约束或动态派发。
 - **类型推断**：可以经由接口的（包括未导出的）方法签名推断类型参数（Go 1.21 起的规则）。这是 `Set(u.Name, "Tim")` 推断出 `V=string` 并拒绝 `Set(u.Name, 3)`、拒绝跨表 `Set(orders.Note, ...)` 的基础，已用 `internal/testdb/compiletest` 固化。
 - 系统自带的 Go 1.26 `gofmt` 无法解析泛型方法，必须使用 1.27 工具链的 `gofmt`（Makefile 已处理）。

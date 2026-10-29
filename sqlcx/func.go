@@ -177,17 +177,19 @@ func PercentRank() Number[float64] { return Number[float64]{}.withNode(windowFn(
 func CumeDist() Number[float64] { return Number[float64]{}.withNode(windowFn("cume_dist")) }
 
 // Ntile is ntile(n); it must be used with Over.
-func Ntile(n int32) Number[int32] { return Number[int32]{}.withNode(windowFn("ntile", param(n))) }
+func Ntile[N Integer](n N) Number[int32] {
+	return Number[int32]{}.withNode(windowFn("ntile", int32Param("ntile", n)))
+}
 
 // Lag is lag(e, offset); it must be used with Over. The result is NULL for
 // rows without a predecessor.
-func Lag[V any](e Typed[V], offset int32) Value[V] {
-	return Value[V]{windowFn("lag", e.node(), &ast.Cast{X: param(offset), Type: "integer"})}
+func Lag[V any, N Integer](e Typed[V], offset N) Value[V] {
+	return Value[V]{windowFn("lag", e.node(), &ast.Cast{X: int32Param("lag offset", offset), Type: "integer"})}
 }
 
 // Lead is lead(e, offset); it must be used with Over.
-func Lead[V any](e Typed[V], offset int32) Value[V] {
-	return Value[V]{windowFn("lead", e.node(), &ast.Cast{X: param(offset), Type: "integer"})}
+func Lead[V any, N Integer](e Typed[V], offset N) Value[V] {
+	return Value[V]{windowFn("lead", e.node(), &ast.Cast{X: int32Param("lead offset", offset), Type: "integer"})}
 }
 
 // FirstValue is first_value(e); it must be used with Over.
@@ -264,10 +266,14 @@ func UnboundedFollowing() FrameBound { return FrameBound{text: "UNBOUNDED FOLLOW
 func CurrentRow() FrameBound { return FrameBound{text: "CURRENT ROW"} }
 
 // Preceding is n PRECEDING (ROWS and GROUPS frames).
-func Preceding(n int64) FrameBound { return FrameBound{text: "\x00 PRECEDING", arg: param(n)} }
+func Preceding[N Integer](n N) FrameBound {
+	return FrameBound{text: "\x00 PRECEDING", arg: int64Param("frame offset", n)}
+}
 
 // Following is n FOLLOWING (ROWS and GROUPS frames).
-func Following(n int64) FrameBound { return FrameBound{text: "\x00 FOLLOWING", arg: param(n)} }
+func Following[N Integer](n N) FrameBound {
+	return FrameBound{text: "\x00 FOLLOWING", arg: int64Param("frame offset", n)}
+}
 
 // Rows sets ROWS BETWEEN start AND end.
 func (w WindowSpec) Rows(start, end FrameBound) WindowSpec { return w.frame("ROWS", start, end) }

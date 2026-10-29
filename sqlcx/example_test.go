@@ -55,14 +55,15 @@ func Example_dynamicWhere() {
 }
 
 // Page and AllAndCount make the usual list endpoint; Sort takes the direction
-// from a bool.
+// from a bool. Page, Limit and Offset accept any integer type.
 func ExampleSelect_Page() {
 	u := dynamic.Users
 	newestFirst := true
+	var page, size int32 = 3, 20 // e.g. from a request struct
 	q := u.Query().
 		Where(u.Administrator.IsFalse()).
 		OrderBy(u.CreatedAt.Sort(newestFirst), u.ID.Sort(newestFirst)).
-		Page(3, 20)
+		Page(page, size)
 	// rows, total, err := q.AllAndCount(ctx, pool)
 	printSQL(q)
 	// Output:

@@ -32,9 +32,11 @@ u.Meta.ContainsJSON(map[string]string{"plan": "pro"})  // meta @> CAST($1 AS jso
 u.Meta.Get("flags").HasKey("beta")                     // (meta -> $1) ? $2
 u.Meta.PathText("flags", "beta").Eq("true")            // meta #>> $1 = $2
 u.Meta.PathExists(`$.flags.beta ? (@ == true)`)        // jsonpath
+u.Meta.Index(i).IsNotNull()                            // meta -> CAST($1 AS integer)，i 可为任意整数类型
 u.Tags.Has("go")                                       // $1 = ANY (tags)
 u.Tags.Overlaps([]string{"go", "sql"})                 // tags && $1
 u.Tags.Len().Eq(0)                                     // cardinality(tags) = $1
+u.Tags.At(1).IsNotDistinctFrom("go")                   // tags[CAST($1 AS integer)] IS NOT DISTINCT FROM $2，1 起始
 
 u.Update().SetExpr(u.Meta, u.Meta.SetPath([]string{"flags", "beta"}, false)) // jsonb_set
 u.Update().SetExpr(u.Tags, u.Tags.Append("rust"))                            // array_append
@@ -108,6 +110,8 @@ u.Query().Into(
         func(r *Ranked) *int64 { return &r.Rank }),
 )
 ```
+
+`Ntile(n)`、`Lag(e, offset)`、`Lead(e, offset)`、`Preceding(n)`、`Following(n)` 的整数参数接受任意整数类型，超出 PostgreSQL 参数范围时 `Build` 报错。
 
 ## 写操作（`TestMutations`）
 

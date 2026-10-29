@@ -3,6 +3,7 @@ package sqlcx
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 
 	"github.com/Xwudao/go-sqlcx/internal/ast"
@@ -200,16 +201,31 @@ func (c Compound[R]) OrderBy(terms ...OrderTerm) Compound[R] {
 }
 
 // Limit sets LIMIT n.
-func (c Compound[R]) Limit(n int64) Compound[R] {
+func (c Compound[R]) Limit[N Integer](n N) Compound[R] {
+	v, ok := toInt64(n)
+	if !ok || v < 0 {
+		return c.fail(fmt.Errorf("sqlcx: invalid LIMIT %d", n))
+	}
 	c = c.clone()
-	c.st.Limit = param(n)
+	c.st.Limit = param(v)
 	return c
 }
 
 // Offset sets OFFSET n.
-func (c Compound[R]) Offset(n int64) Compound[R] {
+func (c Compound[R]) Offset[N Integer](n N) Compound[R] {
+	v, ok := toInt64(n)
+	if !ok || v < 0 {
+		return c.fail(fmt.Errorf("sqlcx: invalid OFFSET %d", n))
+	}
 	c = c.clone()
-	c.st.Offset = param(n)
+	c.st.Offset = param(v)
+	return c
+}
+
+func (c Compound[R]) fail(err error) Compound[R] {
+	if c.err == nil {
+		c.err = err
+	}
 	return c
 }
 

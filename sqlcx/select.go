@@ -191,38 +191,70 @@ func (q Select[R]) OrderBy(terms ...OrderTerm) Select[R] {
 	return q
 }
 
+// Integer is any built-in integer type, including named types such as
+// those sqlc generates. Limit, Offset and Page accept it so callers can pass
+// int32/int/uint values from requests or generated params without converting.
+type Integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+// toInt64 converts n to int64, reporting false when an unsigned value does
+// not fit.
+func toInt64[N Integer](n N) (int64, bool) {
+	v := int64(n)
+	return v, n < 0 || v >= 0
+}
+
 // Limit sets LIMIT n (bound as a parameter).
-func (q Select[R]) Limit(n int64) Select[R] {
-	if n < 0 {
-		return q.fail(fmt.Errorf("sqlcx: negative LIMIT %d", n))
+func (q Select[R]) Limit[N Integer](n N) Select[R] {
+	v, ok := toInt64(n)
+	if !ok {
+		return q.fail(fmt.Errorf("sqlcx: LIMIT %d overflows int64", n))
+	}
+	if v < 0 {
+		return q.fail(fmt.Errorf("sqlcx: negative LIMIT %d", v))
 	}
 	q = q.clone()
-	q.st.Limit = param(n)
-	q.limit = &n
+	q.st.Limit = param(v)
+	q.limit = &v
 	return q
 }
 
 // Offset sets OFFSET n (bound as a parameter).
-func (q Select[R]) Offset(n int64) Select[R] {
-	if n < 0 {
-		return q.fail(fmt.Errorf("sqlcx: negative OFFSET %d", n))
+func (q Select[R]) Offset[N Integer](n N) Select[R] {
+	v, ok := toInt64(n)
+	if !ok {
+		return q.fail(fmt.Errorf("sqlcx: OFFSET %d overflows int64", n))
+	}
+	if v < 0 {
+		return q.fail(fmt.Errorf("sqlcx: negative OFFSET %d", v))
 	}
 	q = q.clone()
-	q.st.Offset = param(n)
+	q.st.Offset = param(v)
 	return q
 }
 
 // Page sets LIMIT size OFFSET (page-1)*size for 1-based page numbers;
-// pages below 1 are treated as page 1.
-func (q Select[R]) Page(page, size int64) Select[R] {
-	if size < 0 {
-		return q.fail(fmt.Errorf("sqlcx: negative page size %d", size))
+// pages below 1 are treated as page 1. page and size may be different
+// integer types.
+func (q Select[R]) Page[P, S Integer](page P, size S) Select[R] {
+	p, ok := toInt64(page)
+	if !ok {
+		return q.fail(fmt.Errorf("sqlcx: page %d overflows int64", page))
 	}
-	page = max(page, 1)
-	if size > 0 && page-1 > math.MaxInt64/size {
-		return q.fail(fmt.Errorf("sqlcx: page %d of size %d overflows OFFSET", page, size))
+	sz, ok := toInt64(size)
+	if !ok {
+		return q.fail(fmt.Errorf("sqlcx: page size %d overflows int64", size))
 	}
-	return q.Limit(size).Offset((page - 1) * size)
+	if sz < 0 {
+		return q.fail(fmt.Errorf("sqlcx: negative page size %d", sz))
+	}
+	p = max(p, 1)
+	if sz > 0 && p-1 > math.MaxInt64/sz {
+		return q.fail(fmt.Errorf("sqlcx: page %d of size %d overflows OFFSET", p, sz))
+	}
+	return q.Limit(sz).Offset((p - 1) * sz)
 }
 
 // LockOption modifies a row-locking clause.

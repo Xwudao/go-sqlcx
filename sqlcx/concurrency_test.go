@@ -21,7 +21,7 @@ func TestConcurrentBuild(t *testing.T) {
 	errs := make(chan error, 64)
 	for i := range 64 {
 		wg.Go(func() {
-			q := base.Where(u.Age.Gt(int32(i))).Limit(int64(i + 1))
+			q := base.Where(u.Age.Gt(int32(i))).Limit(i + 1)
 			for range 50 {
 				q = q.Where(sqlcx.Or(u.Name.Eq(fmt.Sprint(i)), u.Tags.Has("x")))
 			}

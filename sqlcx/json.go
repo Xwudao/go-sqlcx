@@ -17,8 +17,8 @@ func (JSON[V]) withNode(n ast.Node) JSON[V] { return JSON[V]{Value[V]{n}} }
 func (e JSON[V]) Get(key string) JSON[[]byte] { return JSON[[]byte]{}.withNode(jsonOp(e.n, "->", key)) }
 
 // Index returns e -> i for a JSON array.
-func (e JSON[V]) Index(i int) JSON[[]byte] {
-	return JSON[[]byte]{}.withNode(jsonOp(e.n, "->", int32(i)))
+func (e JSON[V]) Index[N Integer](i N) JSON[[]byte] {
+	return JSON[[]byte]{}.withNode(jsonOp(e.n, "->", jsonIndex(i)))
 }
 
 // GetText returns e ->> key. The result is NULL when the key is absent.
@@ -47,8 +47,8 @@ func (e JSONB[V]) Get(key string) JSONB[[]byte] {
 }
 
 // Index returns e -> i for a JSON array.
-func (e JSONB[V]) Index(i int) JSONB[[]byte] {
-	return JSONB[[]byte]{}.withNode(jsonOp(e.n, "->", int32(i)))
+func (e JSONB[V]) Index[N Integer](i N) JSONB[[]byte] {
+	return JSONB[[]byte]{}.withNode(jsonOp(e.n, "->", jsonIndex(i)))
 }
 
 // GetText returns e ->> key. The result is NULL when the key is absent.
@@ -137,6 +137,11 @@ func (e JSONB[V]) Strip() JSONB[V] { return JSONB[V]{}.withNode(call("jsonb_stri
 // TypeOf returns jsonb_typeof(e).
 func (e JSONB[V]) TypeOf() Text[string] { return Text[string]{}.withNode(call("jsonb_typeof", e.n)) }
 
+// jsonIndex is a JSON array index bound as integer.
+func jsonIndex[N Integer](i N) ast.Node {
+	return &ast.Cast{X: int32Param("JSON index", i), Type: "integer"}
+}
+
 func jsonOp(x ast.Node, op string, key any) ast.Node {
 	var r ast.Node
 	switch k := key.(type) {
@@ -144,8 +149,6 @@ func jsonOp(x ast.Node, op string, key any) ast.Node {
 		r = k
 	case string:
 		r = &ast.Cast{X: param(k), Type: "text"}
-	case int32:
-		r = &ast.Cast{X: param(k), Type: "integer"}
 	default:
 		r = ast.Errorf("sqlcx: internal error: bad json key %T", key)
 	}
@@ -200,8 +203,8 @@ func (e Array[V, E]) HasExpr(elem Typed[E]) Cond {
 func (e Array[V, E]) Len() Number[int32] { return Number[int32]{}.withNode(call("cardinality", e.n)) }
 
 // At returns e[i] (1-based, as in PostgreSQL).
-func (e Array[V, E]) At(i int) Value[E] {
-	return Value[E]{&ast.Raw{Parts: []string{"", "[", "]"}, Args: []ast.Node{e.n, &ast.Cast{X: param(int32(i)), Type: "integer"}}, P: ast.PrecCast}}
+func (e Array[V, E]) At[N Integer](i N) Value[E] {
+	return Value[E]{&ast.Raw{Parts: []string{"", "[", "]"}, Args: []ast.Node{e.n, &ast.Cast{X: int32Param("array index", i), Type: "integer"}}, P: ast.PrecCast}}
 }
 
 // Append returns array_append(e, elem).

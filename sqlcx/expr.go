@@ -1,6 +1,9 @@
 package sqlcx
 
 import (
+	"fmt"
+	"math"
+
 	"github.com/Xwudao/go-sqlcx/internal/ast"
 )
 
@@ -381,6 +384,26 @@ func (op Op) valid() bool {
 // ---- node helpers ----
 
 func param(v any) ast.Node { return ast.Param{V: v} }
+
+// int64Param binds n as an int64 parameter, or fails the expression when it
+// does not fit.
+func int64Param[N Integer](what string, n N) ast.Node {
+	v, ok := toInt64(n)
+	if !ok {
+		return ast.ErrNode{Err: fmt.Errorf("sqlcx: %s %d overflows int64", what, n)}
+	}
+	return param(v)
+}
+
+// int32Param binds n as an int32 parameter (PostgreSQL integer), or fails
+// the expression when it does not fit.
+func int32Param[N Integer](what string, n N) ast.Node {
+	v, ok := toInt64(n)
+	if !ok || v < math.MinInt32 || v > math.MaxInt32 {
+		return ast.ErrNode{Err: fmt.Errorf("sqlcx: %s %d overflows int32", what, n)}
+	}
+	return param(int32(v))
+}
 
 func boolOf(n ast.Node) Comparable[bool] { return Comparable[bool]{Value[bool]{n}} }
 

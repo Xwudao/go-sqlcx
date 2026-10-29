@@ -186,7 +186,7 @@ names, err := u.Query().Distinct().Values(u.Name).All(ctx, pool) // []string
 ptrs, err := u.Query().AllPtrs(ctx, pool)                          // []*db.User，配合 emit_result_struct_pointers
 ```
 
-另有 `DistinctOn`、窗口函数（`Over(RowNumber(), Window().PartitionBy(...).OrderBy(...).Rows(...))`）、`Filter`、`Case`、`Coalesce`、`BindNull`、`BindScanner`（自定义 Scanner）。
+另有 `DistinctOn`、窗口函数（`Over(RowNumber(), Window().PartitionBy(...).OrderBy(...).Rows(...))`；`Ntile`、`Lag/Lead`、`Preceding/Following` 的整数参数同样接受任意整数类型）、`Filter`、`Case`、`Coalesce`、`BindNull`、`BindScanner`（自定义 Scanner）。
 
 ## 动态 ORDER BY 与分页
 
@@ -221,9 +221,10 @@ q.OrderBy(
 ```go
 rows, total, err := q.OrderBy(u.ID.Desc()).Page(req.Page, req.Size).AllAndCount(ctx, pool)
 // AllPtrsAndCount 返回 []*M，配合 emit_result_struct_pointers
+// Page/Limit/Offset 接受任意整数类型（int32、int、uint…，page 与 size 可不同），无需转换
 ```
 
-两条语句分别执行；需要同一快照时传入 REPEATABLE READ 的 `pgx.Tx`。唯一键由 link 从 schema DDL 提取。`NullsFirst/NullsLast`、表达式排序、`Limit/Offset`、`Exists`、`First`（要求 ORDER BY）、`One`（多行报 `ErrTooManyRows`）、`Rows`（`iter.Seq2` 流式迭代）均可用。
+两条语句分别执行；需要同一快照时传入 REPEATABLE READ 的 `pgx.Tx`。唯一键由 link 从 schema DDL 提取。`NullsFirst/NullsLast`、表达式排序、`Limit/Offset`（与 `Page` 一样接受任意整数类型 `sqlcx.Integer`，统一绑定为 int64，越界在 `Build` 时报错）、`Exists`、`First`（要求 ORDER BY）、`One`（多行报 `ErrTooManyRows`）、`Rows`（`iter.Seq2` 流式迭代）均可用。
 
 ## UPDATE / INSERT / DELETE
 
